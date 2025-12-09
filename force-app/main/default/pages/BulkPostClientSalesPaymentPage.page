@@ -1,67 +1,76 @@
 <apex:page docType="html-5.0" standardController="Client_Sales_Invoice_Header__c" extensions="clientSalesPaymentKPBulkPost" recordSetVar="csihList">
     <apex:form >
-	<apex:pageBlock >
-    	<apex:pageBlockTable value="{!selected}" var="trans">
-            <apex:column value="{!trans.Name}"/>
-            <apex:column value="{!trans.Client_Account_Lookup__c}"/>
-            <apex:column value="{!trans.CL_Account__c}"/>
-            <apex:column value="{!trans.CL_Analysis_1__c}"/>
-            <apex:column value="{!trans.CL_Analysis_2__c}"/>
-            <apex:column value="{!trans.CL_Posting_Status__c}"/>
-             <apex:column value="{!trans.CL_Currency__r.Name}"/>
-            <apex:column value="{!trans.CL_Amount_Due__c}"/>
-    	</apex:pageBlockTable>
-        <br/><br/>
-        
-        <div align="right">
-            Total Amount:  {!totalAmountDue} &nbsp; &nbsp; &nbsp; &nbsp;
-        </div>
-        
-        <div align="center">
-          
+        <apex:pageBlock >
+            <apex:pageBlockTable value="{!selected}" var="trans">
+                <apex:column value="{!trans.Name}"/>
+                <apex:column value="{!trans.Client_Account_Lookup__c}"/>
+                <apex:column value="{!trans.CL_Account__c}"/>
+                <apex:column value="{!trans.CL_Analysis_1__c}"/>
+                <apex:column value="{!trans.CL_Analysis_2__c}"/>
+                <apex:column value="{!trans.CL_Posting_Status__c}"/>
+                <apex:column value="{!trans.CL_Currency__r.Name}"/>
+                <apex:column value="{!trans.CL_Amount_Due__c}"/>
+            </apex:pageBlockTable>
+            <br/><br/>
+            
+            <div align="right">
+                Total Amount:  {!totalAmountDue} &nbsp; &nbsp; &nbsp; &nbsp;
+            </div>
+            
+            <div align="center" style="margin-top:10px">
+                
                 <table> 
                     <tr>
                         <td>
                             <center>Payment Date: &nbsp; &nbsp; <apex:input type="date" value="{!selectedDate}" required="true"/> &nbsp; &nbsp; &nbsp; &nbsp;
-                                    Payment Reference: &nbsp; &nbsp; <apex:input type="text" value="{!selectedPaymentDescription}" required="true"/> &nbsp; &nbsp; &nbsp; &nbsp;
-                            	    To Bank Account: &nbsp; &nbsp;
-                                      <apex:selectList value="{!selectedPicklistValue}" size="1" required="true">
-                                        <apex:selectOptions value="{!items}"/>
-                                    </apex:selectList>&nbsp; &nbsp; &nbsp; &nbsp;
+                                Payment Reference: &nbsp; &nbsp; <apex:input type="text" value="{!selectedPaymentDescription}" required="true"/> &nbsp; &nbsp; &nbsp; &nbsp;
+                                From Bank Account: &nbsp; &nbsp;
+                                <apex:selectList value="{!selectedFromBankAccount}" size="1" required="true">
+                                    <apex:selectOptions value="{!items}"/>
+                                </apex:selectList>&nbsp; &nbsp; &nbsp; &nbsp;
+                                To Bank Account: &nbsp; &nbsp;
+                                <apex:selectList value="{!selectedToBankAccount}" size="1" required="true">
+                                    <apex:selectOptions value="{!items}"/>
+                                </apex:selectList>&nbsp; &nbsp; &nbsp; &nbsp;
                                 <!-- Added checkbox -->
                                 Paid Directly &nbsp;&nbsp;<apex:inputCheckbox value="{!isPaymentDirectly}"/> 
                                 <p/>
-        					<br/>
-                           	<apex:commandButton value="Pay" action="{!bulkPostKP}" oncomplete="showToast()"/>
-                           </center>
-                            <script>
-                               function showToast(){
-                                    sforce.one.showToast({
-                                    "title": "Success!",
-                                    "message":  "{!paymentsCount} Client Sales Payments Posted.",
-                                    "type": "Success"
-                                    });
-                                    window.history.back();
-                               }
-                                </script>	
-                             <apex:outputPanel rendered="{!isErrorReturn}">
-                                <script>
+                                <br/>
+                                <apex:commandButton value="Pay" action="{!bulkPostKP}" oncomplete="showToast()" reRender="messagePanel"/>
+                            </center>
+                            <apex:outputPanel id="messagePanel" >
+                                <apex:outputPanel id="sucessMsg" rendered="{!NOT(isErrorReturn)}">
+                                    <script>
                                     function showToast(){
                                         sforce.one.showToast({
+                                            "title": "Success!",
+                                            "message": "{!paymentsCount} Client Sales Payments Posted.",
+                                            "type": "Success"
+                                        });
+                                        window.history.back();
+                                    }
+                                    </script>	
+                                </apex:outputPanel>
+                                <apex:outputPanel id="errorMsg" rendered="{!isErrorReturn}">
+                                    <script>
+                                    function showToast(){
+                                        console.log("Error: ", '{!errorMessageReturn}');
+                                        sforce.one.showToast({
                                             "title": "Error!",
-                                            "message":   '{!errorMessageReturn}',
+                                            "message": "{!errorMessageReturn}",
                                             "type": "Error"
                                         });
                                     }
-                                 //window.history.back();
-                                </script>
+                                    //window.history.back();
+                                    </script>
+                                </apex:outputPanel>
                             </apex:outputPanel>
                         </td>
                     </tr>
                 </table>
-           
-        </div>
-	</apex:pageBlock>
-        </apex:form>
+                
+            </div>
+        </apex:pageBlock>
+    </apex:form>
     
 </apex:page>
