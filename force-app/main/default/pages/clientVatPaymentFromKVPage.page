@@ -20,10 +20,15 @@
                 <table>
                     <tr>
                         <td>
-                            <center>Payment Date: &nbsp; &nbsp; <apex:input type="date" value="{!selectedDate}" required="true"/> &nbsp; &nbsp; &nbsp; &nbsp;
-                                Journal Description: &nbsp; &nbsp; <apex:input type="text" value="{!selectedJournalDescription}" required="true"/> &nbsp; &nbsp; &nbsp; &nbsp;
+                            <center>Payment Date: &nbsp; &nbsp; <apex:input type="date" value="{!selectedDate}" required="true"/> &nbsp; &nbsp; &nbsp;
+                                Journal Description: &nbsp; &nbsp; <apex:input type="text" value="{!selectedJournalDescription}" required="true"/> &nbsp; &nbsp; &nbsp;
+                                From Bank Account: &nbsp; &nbsp;
+                                <apex:selectList value="{!selectedFromBankAccount}" size="1" required="true">
+                                    <apex:selectOptions value="{!items}"/>
+                                </apex:selectList><p/>
+                                
                                 To Bank Account: &nbsp; &nbsp;
-                                <apex:selectList value="{!selectedPicklistValue}" size="1" required="true">
+                                <apex:selectList value="{!selectedToBankAccount}" size="1" required="true">
                                     <apex:selectOptions value="{!items}"/>
                                 </apex:selectList><p/>
                                 

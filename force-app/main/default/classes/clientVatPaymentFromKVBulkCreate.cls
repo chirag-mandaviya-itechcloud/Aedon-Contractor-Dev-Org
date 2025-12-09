@@ -21,7 +21,9 @@ public class clientVatPaymentFromKVBulkCreate {
     public ApexPages.StandardSetController stdCtrl;
     
     public Date selectedDate { get; set; }
-    public String selectedPicklistValue { get; set; }
+    public String selectedPicklistValue { get; set; } // old to bank account
+    public String selectedFromBankAccount { get; set; }		// new from bank account
+    public String selectedToBankAccount { get; set; }		// new to bank account
     public String selectedJournalDescription { get; set; }
     
     public List<SelectOption> getItems() {
@@ -50,6 +52,8 @@ public class clientVatPaymentFromKVBulkCreate {
             // If this is the default record, assign it to selectedPicklistValue
             if (defaultBankAccount != null && c.Id == defaultBankAccount.Id) {
                 selectedPicklistValue = c.Id;
+                selectedToBankAccount = c.Id; // default selected to bank acocunt
+                selectedFromBankAccount = c.Id;
             }
         }
         
@@ -159,7 +163,7 @@ public class clientVatPaymentFromKVBulkCreate {
         // main logic
         List<aedCn5__VAT_Payment__c> kiObjList = [Select id,Name from aedCn5__VAT_Payment__c where Id IN: siList AND CL_Posting_Status__c =: 'Posted'  WITH SECURITY_ENFORCED];
         if(kiObjList.size() > 0){
-            clientVatPaymentKLBatch batchObj1 = new clientVatPaymentKLBatch(kiObjList,selectedDate,selectedPicklistValue,selectedJournalDescription);
+            clientVatPaymentKLBatch batchObj1 = new clientVatPaymentKLBatch(kiObjList,selectedDate,selectedFromBankAccount,selectedToBankAccount,selectedJournalDescription);
             Id jobId1 = Database.executeBatch(batchObj1, 1);
         }
         return;

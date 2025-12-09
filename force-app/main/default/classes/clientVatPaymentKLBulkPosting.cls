@@ -2,13 +2,15 @@ global with sharing class clientVatPaymentKLBulkPosting {
 	global static Boolean isErrorReturn{get;set;}
     global static String errorMessageReturn{get;set;}
     global Date paymentDate { get; set; }
-    global String bankAccount { get; set; }
+    global String fromBankAccount { get; set; }
+    global String toBankAccount { get; set; }
     global String paymentDescription { get; set; }
     global String journalDescription { get; set; }
 
-    global string klBulkPosting(List<aedCn5__VAT_Payment__c> vpList, Date selectedDate, String selectedPicklistValue,String selectedPaymentDescription){
+    global string klBulkPosting(List<aedCn5__VAT_Payment__c> vpList, Date selectedDate, String selectedFromBankAccount, String selectedToBankAccount, String selectedPaymentDescription){
         paymentDate = selectedDate; 
-        bankAccount = selectedPicklistValue;
+        fromBankAccount = selectedFromBankAccount;
+        toBankAccount = selectedToBankAccount;
         paymentDescription = selectedPaymentDescription;
         
     	if(vpList.size() > 0){ 
@@ -31,7 +33,7 @@ global with sharing class clientVatPaymentKLBulkPosting {
         	//KP -> ID --> KI --> all details
         
             aed0n7__Chart_Of_Accounts__c chartAccountDebit1 = [Select Id,Name,aed0n7__Nominal_Account__c,aed0n7__Ledger_Balance__c,aed0n7__Credit__c,aed0n7__Nominal_Code__c from aed0n7__Chart_Of_Accounts__c where aed0n7__Nominal_Account_UID__c='8110' AND aed0n7__Company__c =:userCompany.aed0n7__Current_Logged_In_Company__c WITH SECURITY_ENFORCED limit 1];
-            aed0n7__Chart_Of_Accounts__c chartAccountCredit1 = [Select Id,Name,aed0n7__Nominal_Account__c,aed0n7__Ledger_Balance__c,aed0n7__Debit__c,aed0n7__Nominal_Code__c from aed0n7__Chart_Of_Accounts__c where Id=: bankAccount  AND aed0n7__Company__c =:userCompany.aed0n7__Current_Logged_In_Company__c WITH SECURITY_ENFORCED limit 1];
+            aed0n7__Chart_Of_Accounts__c chartAccountCredit1 = [Select Id,Name,aed0n7__Nominal_Account__c,aed0n7__Ledger_Balance__c,aed0n7__Debit__c,aed0n7__Nominal_Code__c from aed0n7__Chart_Of_Accounts__c where Id=: toBankAccount AND aed0n7__Company__c =:userCompany.aed0n7__Current_Logged_In_Company__c WITH SECURITY_ENFORCED limit 1];
             aed0n7__Chart_Of_Accounts__c chartAccountDebit2 = [Select Id,Name,aed0n7__Nominal_Account__c,aed0n7__Ledger_Balance__c,aed0n7__Credit__c,aed0n7__Nominal_Code__c from aed0n7__Chart_Of_Accounts__c where aed0n7__Nominal_Account_UID__c='9830' AND aed0n7__Company__c =:userCompany.aed0n7__Current_Logged_In_Company__c WITH SECURITY_ENFORCED limit 1];
             aed0n7__Chart_Of_Accounts__c chartAccountCredit2 = [Select Id,Name,aed0n7__Nominal_Account__c,aed0n7__Ledger_Balance__c,aed0n7__Debit__c,aed0n7__Nominal_Code__c from aed0n7__Chart_Of_Accounts__c where aed0n7__Nominal_Account_UID__c='9800' AND aed0n7__Company__c =:userCompany.aed0n7__Current_Logged_In_Company__c WITH SECURITY_ENFORCED limit 1];
             
@@ -55,6 +57,7 @@ global with sharing class clientVatPaymentKLBulkPosting {
                 mjtDebit1.Account__c = vpt.Account__c;
                 mjtDebit1.CL_Account__c = vpt.aedCn5__CL_Account__c;
                 mjtDebit1.End_User__c = vpt.End_User__c;
+                mjtDebit1.aedCn5__From_Bank_Account__c = fromBankAccount;
                 mjList.add(mjtDebit1);
                 
                 aedCn5__Payment_of_the_VAT_Liability_Transaction__c mjtCredit1 = new aedCn5__Payment_of_the_VAT_Liability_Transaction__c();
@@ -66,6 +69,7 @@ global with sharing class clientVatPaymentKLBulkPosting {
                 mjtCredit1.Account__c = vpt.Account__c;
                 mjtCredit1.CL_Account__c = vpt.aedCn5__CL_Account__c;
                 mjtCredit1.End_User__c = vpt.End_User__c;
+                mjtCredit1.aedCn5__From_Bank_Account__c = fromBankAccount;
                 mjList.add(mjtCredit1);
                 
                 aedCn5__Payment_of_the_VAT_Liability_Transaction__c mjtDebit2 = new aedCn5__Payment_of_the_VAT_Liability_Transaction__c();
@@ -77,6 +81,7 @@ global with sharing class clientVatPaymentKLBulkPosting {
                 mjtDebit2.Account__c = vpt.Account__c;
                 mjtDebit2.CL_Account__c = vpt.aedCn5__CL_Account__c;
                 mjtDebit2.End_User__c = vpt.End_User__c;
+                mjtDebit2.aedCn5__From_Bank_Account__c = fromBankAccount;
                 mjList.add(mjtDebit2);
                 
                 aedCn5__Payment_of_the_VAT_Liability_Transaction__c mjtCredit2 = new aedCn5__Payment_of_the_VAT_Liability_Transaction__c();
@@ -88,6 +93,7 @@ global with sharing class clientVatPaymentKLBulkPosting {
                 mjtCredit2.Account__c = vpt.Account__c;
                 mjtCredit2.CL_Account__c = vpt.aedCn5__CL_Account__c;
                 mjtCredit2.End_User__c = vpt.End_User__c;
+                mjtCredit2.aedCn5__From_Bank_Account__c = fromBankAccount;
                 mjList.add(mjtCredit2);
                 
                 mjList = aed0n7.aedonAppExUtils.aedonInsert(mjList); 
