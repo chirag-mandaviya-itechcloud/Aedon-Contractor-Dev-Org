@@ -1,37 +1,31 @@
 <apex:page docType="html-5.0" standardController="VAT_Payment__c" extensions="clientVatPaymentFromKVBulkCreate" recordSetVar="siList">
     <apex:form >
         <apex:pageBlock >
-            <!-- <apex:pageBlockTable value="{!selected}" var="trans">
-<apex:column value="{!trans.Name}"/>
-<apex:column value="{!trans.CL_Account__c}"/>
-<apex:column value="{!trans.Client_Account_Lookup__c}"/>
-<apex:column value="{!trans.CL_Total_Tax_Payable__c}"/>
-</apex:pageBlockTable> -->
             <apex:pageBlockTable value="{!wrapperList}" var="wrap">
-                <apex:column headerValue="Name" value="{!wrap.record.Name}"/>
-                <apex:column headerValue="Amount Held on Account" value="{!wrap.amountHeldOnAccount}"/>
-                <apex:column headerValue="VAT Amount">
+                <apex:column headerValue="Name" value="{!wrap.record.Name}" style="width:450px"/>
+                <apex:column headerValue="Amount Held on Account" value="{!wrap.amountHeldOnAccount}" style="width:450px"/>
+                <apex:column headerValue="VAT Amount" style="width:450px">
                     <apex:input value="{!wrap.userAmount}" type="number"/>
                 </apex:column>
             </apex:pageBlockTable>
             <br/><br/>
             <div align="center">
-                
                 <table>
                     <tr>
                         <td>
-                            <center>Payment Date: &nbsp; &nbsp; <apex:input type="date" value="{!selectedDate}" required="true"/> &nbsp; &nbsp; &nbsp;
-                                Journal Description: &nbsp; &nbsp; <apex:input type="text" value="{!selectedJournalDescription}" required="true"/> &nbsp; &nbsp; &nbsp;
+                            <center>
+                                Payment Date: &nbsp; &nbsp; 
+                                <apex:input type="date" value="{!selectedDate}" required="true"/> &nbsp; &nbsp; &nbsp;
+                                Journal Description: &nbsp; &nbsp; 
+                                <apex:input type="text" value="{!selectedJournalDescription}" required="true"/> &nbsp; &nbsp; &nbsp;
                                 From Bank Account: &nbsp; &nbsp;
                                 <apex:selectList value="{!selectedFromBankAccount}" size="1" required="true">
                                     <apex:selectOptions value="{!items}"/>
-                                </apex:selectList><p/>
-                                
+                                </apex:selectList> &nbsp; &nbsp; &nbsp;
                                 To Bank Account: &nbsp; &nbsp;
                                 <apex:selectList value="{!selectedToBankAccount}" size="1" required="true">
                                     <apex:selectOptions value="{!items}"/>
-                                </apex:selectList><p/>
-                                
+                                </apex:selectList>
                                 <br/>
                                 <apex:commandButton value="Create" action="{!generateKT}" oncomplete="showToast()" reRender="messagePanel"/>
                             </center>
@@ -65,7 +59,6 @@
                         </td>
                     </tr>
                 </table>
-                
             </div>
         </apex:pageBlock>
     </apex:form>

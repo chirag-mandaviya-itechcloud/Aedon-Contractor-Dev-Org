@@ -72,12 +72,12 @@ public class clientVatPaymentFromKVBulkCreate {
         // query vat payments
         List<aedCn5__VAT_Payment__c> vatList = [Select Id, Name, aedCn5__Client_Sales_Invoices__c from aedCn5__VAT_Payment__c where Id IN: siList WITH SECURITY_ENFORCED];       
         System.debug('vatList: '+ vatList);
-
+        
         // collect invoiceIds
         Set<Id> invoiceIds = new Set<Id>();
         for (aedCn5__VAT_Payment__c vat : vatList) {
             if (vat.aedCn5__Client_Sales_Invoices__c != null) {
-            	invoiceIds.add(vat.aedCn5__Client_Sales_Invoices__c); 
+                invoiceIds.add(vat.aedCn5__Client_Sales_Invoices__c); 
             }
             wrapperList.add(new RowWrapper(vat));
         }

@@ -39,7 +39,7 @@ public with sharing class clientSalesPaymentKPBulkPost {
             options.add(new SelectOption(c.Id, c.Name));
             bankAccountMap.put(c.Id, c);
             
-            // If this is the default record, assign it to selectedPicklistValue
+            // If this is the default record, assign it to selected bank account
             if (defaultBankAccount != null && c.Id == defaultBankAccount.Id) {
                 selectedToBankAccount = c.Id;
                 selectedFromBankAccount = c.Id;
