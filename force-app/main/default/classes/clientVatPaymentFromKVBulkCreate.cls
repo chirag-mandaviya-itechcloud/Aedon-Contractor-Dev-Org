@@ -21,13 +21,14 @@ public class clientVatPaymentFromKVBulkCreate {
     public ApexPages.StandardSetController stdCtrl;
     
     public Date selectedDate { get; set; }
-    public String selectedPicklistValue { get; set; } // old to bank account
     public String selectedFromBankAccount { get; set; }		// new from bank account
     public String selectedToBankAccount { get; set; }		// new to bank account
     public String selectedJournalDescription { get; set; }
+    public Map<Id, aed0n7__Chart_Of_Accounts__c> bankAccountMap { get; set; }
     
     public List<SelectOption> getItems() {
         List<SelectOption> options = new List<SelectOption>();
+        bankAccountMap = new Map<Id, aed0n7__Chart_Of_Accounts__c>();
         
         // Fetch the default bank account based on the UID field
         aed0n7__Chart_Of_Accounts__c defaultBankAccount = [
@@ -39,7 +40,7 @@ public class clientVatPaymentFromKVBulkCreate {
         
         // Query all available bank accounts
         List<aed0n7__Chart_Of_Accounts__c> bankAccounts = [
-            SELECT Id, Name 
+            SELECT Id, Name, aed0n7__Category__c, aedCn5__Client_Ledger__c, aedCn5__Client_Ledger__r.aed0n7__Category__c 
             FROM aed0n7__Chart_Of_Accounts__c 
             WHERE aed0n7__Reporting_Class__c = 'Cash & Bank' 
             WITH SECURITY_ENFORCED
@@ -48,10 +49,10 @@ public class clientVatPaymentFromKVBulkCreate {
         // Populate the options and set the default value
         for (aed0n7__Chart_Of_Accounts__c c : bankAccounts) {
             options.add(new SelectOption(c.Id, c.Name));
+            bankAccountMap.put(c.Id, c);
             
-            // If this is the default record, assign it to selectedPicklistValue
+            // If this is the default record, assign it to 
             if (defaultBankAccount != null && c.Id == defaultBankAccount.Id) {
-                selectedPicklistValue = c.Id;
                 selectedToBankAccount = c.Id; // default selected to bank acocunt
                 selectedFromBankAccount = c.Id;
             }
@@ -151,11 +152,30 @@ public class clientVatPaymentFromKVBulkCreate {
         isErrorReturn = false;
         errorMessageReturn = null;
         
+        // condition for amount exceed or not.
         for (RowWrapper wrap : wrapperList) {
             Decimal ua = (wrap.userAmount == null) ? 0 : wrap.userAmount;
             if (ua > wrap.amountHeldOnAccount) {
                 isErrorReturn = true;
                 errorMessageReturn = 'Entered amount (' + String.valueOf(ua) + ') cannot exceed available amount (' + String.valueOf(wrap.amountHeldOnAccount) + ')';
+                return;
+            }
+        }
+        
+        // Validation for from account selection condition
+        aed0n7__Chart_Of_Accounts__c fromAcc = bankAccountMap.get(selectedFromBankAccount);
+        if (fromAcc != null) {
+            Boolean isChildClient  = (fromAcc.aed0n7__Category__c == 'Client');
+            Boolean isParentClient = false;
+            if (fromAcc.aedCn5__Client_Ledger__c != null) {
+                aed0n7__Chart_Of_Accounts__c parentAcc = bankAccountMap.get(fromAcc.aedCn5__Client_Ledger__c);
+                if (parentAcc != null && parentAcc.aed0n7__Category__c == 'Client') {
+                    isParentClient = true;
+                }
+            }
+            if (isChildClient && isParentClient) {
+                isErrorReturn = true;
+                errorMessageReturn = 'Selected From Account cannot be Client when its parent account is also Client.';
                 return;
             }
         }
